@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:youtube_explode_dart/youtube_explode_dart.dart';
 
@@ -15,13 +16,24 @@ class DownloadService {
     final video = await _yt.videos.get(url);
     final manifest = await _yt.videos.streamsClient.getManifest(video.id);
 
-    final streamInfo = manifest.videoOnly.firstOrNull;
+    final streamInfo = manifest.video.firstOrNull;
     if (streamInfo == null) {
       throw 'No available streams for this video.';
     }
 
     final stream = _yt.videos.streamsClient.get(streamInfo);
-    final dir = Directory('/storage/emulated/0/AuthorityMartDownloads');
+    final baseDir = await getExternalStorageDirectory();
+    if (baseDir == null) {
+      throw Exception('Failed to access external storage directory.');
+    }
+    final dir = Directory(p.join(baseDir.path, 'AuthorityMartDownloads'));
+    if (!dir.existsSync()) {
+      dir.createSync(recursive: true);
+    }
+
+    if (!dir.existsSync()) {
+      dir.createSync(recursive: true);
+    }
     if (!dir.existsSync()) {
       dir.createSync();
     }

@@ -35,20 +35,21 @@ class _DownloadScreenState extends State<DownloadScreen> {
         Navigator.pop(context); // Close the download screen
       }
     }, onError: (error) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Download Failed'),
-          content: const Text(
-              'This video cannot be downloaded due to YouTube restrictions. Please try another video.'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
+      print(error);
+      // showDialog(
+      //   context: context,
+      //   builder: (context) => AlertDialog(
+      //     title: const Text('Download Failed'),
+      //     content: const Text(
+      //         'This video cannot be downloaded due to YouTube restrictions. Please try another video.'),
+      //     actions: [
+      //       TextButton(
+      //         onPressed: () => Navigator.pop(context),
+      //         child: const Text('OK'),
+      //       ),
+      //     ],
+      //   ),
+      // );
     });
   }
 
