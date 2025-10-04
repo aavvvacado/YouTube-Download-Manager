@@ -5,7 +5,9 @@ class YoutubeVideoInfo {
   final String thumbnailUrl;
   final List<String> availableQualities;
   final String author;
-  var duration;
+  Duration? duration;
+  
+  Duration? get videoDuration => duration;
 
   YoutubeVideoInfo(
       {required this.title,
@@ -22,12 +24,17 @@ class YoutubeService {
     final video = await _yt.videos.get(url);
     final manifest = await _yt.videos.streamsClient.getManifest(video.id);
 
-    List<String> qualities =
-        manifest.muxed.map((e) => e.videoQualityLabel).toList();
+    // Deduplicate and sort quality labels descending (e.g., 1080p, 720p...)
+    final qualitiesSet = manifest.muxed.map((e) => e.qualityLabel).toSet();
+    final qualities = qualitiesSet.toList()
+      ..sort((a, b) {
+        int toInt(String s) => int.tryParse(s.replaceAll(RegExp(r'\D'), '')) ?? 0;
+        return toInt(b).compareTo(toInt(a));
+      });
 
     return YoutubeVideoInfo(
       title: video.title,
-      thumbnailUrl: video.thumbnails.standardResUrl,
+      thumbnailUrl: video.thumbnails.highResUrl,
       author: video.author,
       duration: video.duration,
       availableQualities: qualities,

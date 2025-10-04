@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:open_file/open_file.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import '../ui/widgets/app_nav_bar.dart';
 
 class DownloadsListScreen extends StatefulWidget {
   const DownloadsListScreen({super.key});
@@ -23,10 +24,17 @@ class _DownloadsListScreenState extends State<DownloadsListScreen> {
   }
 
   Future<void> _loadDownloads() async {
-    final baseDir = await getExternalStorageDirectory();
-    if (baseDir == null) {
-      debugPrint('Could not access external storage');
-      return;
+    // Use platform-appropriate storage directory
+    Directory baseDir;
+    if (Platform.isAndroid) {
+      final ext = await getExternalStorageDirectory();
+      if (ext == null) {
+        debugPrint('Could not access external storage');
+        return;
+      }
+      baseDir = ext;
+    } else {
+      baseDir = await getApplicationDocumentsDirectory();
     }
 
     final directory = Directory(p.join(baseDir.path, 'AuthorityMartDownloads'));
@@ -54,41 +62,54 @@ class _DownloadsListScreenState extends State<DownloadsListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text('Downloaded Videos')),
-      body: files.isEmpty
-          ? const Center(child: Text('No downloaded videos found.'))
-          : ListView.builder(
-              itemCount: files.length,
-              itemBuilder: (context, index) {
-                final file = files[index] as File;
-                final fileName = p.basename(file.path);
-                final fileSize = _formatBytes(file.lengthSync(), 2);
+      bottomNavigationBar: const AppNavBar(currentIndex: 1),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 900),
+          child: files.isEmpty
+              ? Center(
+                  child: Text(
+                    'No downloaded videos found.',
+                    style: TextStyle(color: Theme.of(context).hintColor),
+                  ),
+                )
+              : ListView.builder(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  itemCount: files.length,
+                  itemBuilder: (context, index) {
+                    final file = files[index] as File;
+                    final fileName = p.basename(file.path);
+                    final fileSize = _formatBytes(file.lengthSync(), 2);
 
-                return Card(
-                  margin:
-                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                  elevation: 3,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: ListTile(
-                    contentPadding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    leading: const Icon(Icons.video_file,
-                        size: 40, color: Colors.blue),
-                    title: Text(
-                      fileName,
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    subtitle: Text(fileSize),
-                    trailing: IconButton(
-                      icon: const Icon(Icons.play_arrow, color: Colors.blue),
-                      onPressed: () => OpenFile.open(file.path),
-                    ),
-                  ),
-                );
-              },
-            ),
+                    return Card(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                        leading: Container(
+                          width: 64,
+                          height: 48,
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: Icon(Icons.play_circle_fill, color: Theme.of(context).colorScheme.onPrimaryContainer, size: 36),
+                        ),
+                        title: Text(
+                          fileName,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: Text(fileSize),
+                        trailing: IconButton(
+                          icon: Icon(Icons.play_arrow, color: Theme.of(context).colorScheme.primary),
+                          onPressed: () => OpenFile.open(file.path),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+        ),
+      ),
     );
   }
 }
