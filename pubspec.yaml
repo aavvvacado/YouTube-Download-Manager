@@ -14,7 +14,7 @@ dependencies:
   permission_handler:
   youtube_explode_dart:
     git:
-      url: https://github.com/Hexer10/youtube_explode_dart
+      url: https://github.com/Hexer10/youtube_explode_dart.git
       ref: master
 
   path_provider:
@@ -24,14 +24,16 @@ dependencies:
   provider: ^6.0.5
   google_fonts: ^6.0.0
   flutter_animate: ^4.0.0
-  lottie: ^2.4.0
+  lottie: ^3.3.2
+  ffmpeg_kit_flutter_new: ^3.2.0
+
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
 
-  flutter_lints: ^4.0.0
+  flutter_lints: ^6.0.0
 
 
 flutter:

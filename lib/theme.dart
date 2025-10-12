@@ -34,7 +34,7 @@ class BuildTheme {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 3,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
@@ -66,7 +66,7 @@ class BuildTheme {
         padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 18),
       ),
     ),
-    cardTheme: CardTheme(
+    cardTheme: CardThemeData(
       elevation: 2,
       clipBehavior: Clip.antiAlias,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
